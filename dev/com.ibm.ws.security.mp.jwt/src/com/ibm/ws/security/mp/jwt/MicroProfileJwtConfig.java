@@ -26,4 +26,5 @@ public interface MicroProfileJwtConfig {
 
     public boolean getMapToUserRegistry();
 
+    public String getJwtCookieName();
 }
