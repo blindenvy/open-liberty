@@ -12,6 +12,7 @@ package com.ibm.ws.security.mp.jwt.tai;
 
 import java.util.Iterator;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ibm.websphere.ras.Tr;
@@ -187,18 +188,44 @@ public class TAIRequestHelper {
     }
 
     public String getBearerToken(HttpServletRequest req, MicroProfileJwtConfig clientConfig) {
-        String methodName = "getBearerToken";
-        if (tc.isDebugEnabled()) {
-            Tr.entry(tc, methodName, req, clientConfig);
+      String methodName = "getBearerToken";
+      if (tc.isDebugEnabled()) {
+        Tr.entry(tc, methodName, req, clientConfig);
+      }
+      String token = getBearerTokenFromHeader(req);
+      if (token == null) {
+        token = getBearerTokenFromParameter(req);
+      }
+      if (token == null) {
+        token = getBearerTokenFromCookie(req, clientConfig);
+      }
+      if (tc.isDebugEnabled()) {
+        Tr.exit(tc, methodName, token);
+      }
+      return token;
+    }
+
+    String getBearerTokenFromCookie(HttpServletRequest req, MicroProfileJwtConfig clientConfig) {
+      String methodName = "getBearerTokenFromCookie";
+      if (tc.isDebugEnabled()) {
+        Tr.entry(tc, methodName, req);
+      }
+      String cookieValue = null;
+      Cookie[] cookies = req.getCookies();
+      if(cookies != null) {
+        for(Cookie cookie : cookies) {
+          if(clientConfig.getJwtCookieName().equals(cookie.getName())) {
+            cookieValue = cookie.getValue();
+            if (tc.isDebugEnabled()) {
+              Tr.debug(tc, "JWT Cookie Value=", cookieValue);
+            }
+          }
         }
-        String token = getBearerTokenFromHeader(req);
-        if (token == null) {
-            token = getBearerTokenFromParameter(req);
-        }
-        if (tc.isDebugEnabled()) {
-            Tr.exit(tc, methodName, token);
-        }
-        return token;
+      }
+      if (tc.isDebugEnabled()) {
+        Tr.exit(tc, methodName, cookieValue);
+      }
+      return cookieValue;
     }
 
     String getBearerTokenFromHeader(HttpServletRequest req) {

@@ -30,4 +30,6 @@ public interface MicroProfileJwtConfig extends JwtConsumerConfig {
 
     public String getAuthFilterRef();
 
+    public String getJwtCookieName();
+
 }

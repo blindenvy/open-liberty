@@ -114,6 +114,10 @@ public class MicroProfileJwtConfigImpl implements MicroProfileJwtConfig {
     @com.ibm.websphere.ras.annotation.Sensitive
     private String sharedKey;
 
+    public static final String DEFAULT_JWT_COOKIE_NAME = "wlpJwtCookie";
+    public static final String CFG_KEY_JWT_COOKIE_NAME = "jwtCookieName";
+    protected String jwtCookieName = null;
+
     protected CommonConfigUtils configUtils = new CommonConfigUtils();
 
     @Reference(service = MicroProfileJwtService.class, name = KEY_MP_JWT_SERVICE, cardinality = ReferenceCardinality.MANDATORY)
@@ -173,6 +177,8 @@ public class MicroProfileJwtConfigImpl implements MicroProfileJwtConfig {
         this.tokenReuse = configUtils.getBooleanConfigAttribute(props, CFG_KEY_TOKEN_REUSE, tokenReuse);
         this.ignoreApplicationAuthMethod = configUtils.getBooleanConfigAttribute(props, CFG_KEY_IGNORE_APP_AUTH_METHOD, ignoreApplicationAuthMethod);
         this.mapToUserRegistry = configUtils.getBooleanConfigAttribute(props, CFG_KEY_mapToUserRegistry, mapToUserRegistry);
+        this.jwtCookieName = configUtils.getConfigAttributeWithDefaultValue(props, CFG_KEY_JWT_COOKIE_NAME, DEFAULT_JWT_COOKIE_NAME);
+
         jwkSet = null; // the jwkEndpoint may have been changed during dynamic update
         consumerUtils = null; // the parameters in consumerUtils may have been changed during dynamic changing
         this.signatureAlgorithm = configUtils.getConfigAttribute(props, CFG_KEY_SIGALG);
@@ -196,6 +202,7 @@ public class MicroProfileJwtConfigImpl implements MicroProfileJwtConfig {
             Tr.debug(tc, "groupNameAttribute:" + groupNameAttribute);
             Tr.debug(tc, "mapToUserRegistry:" + mapToUserRegistry);
             Tr.debug(tc, "authFilterRef = " + authFilterRef);
+            Tr.debug(tc, "jwtCookieName:" + jwtCookieName);
             Tr.debug(tc, "sslRef = " + sslRef);
             Tr.debug(tc, "sigAlg = " + signatureAlgorithm);
             Tr.debug(tc, "sharedKey" + sharedKey == null ? "null" : "*********");
@@ -491,6 +498,12 @@ public class MicroProfileJwtConfigImpl implements MicroProfileJwtConfig {
     public String getAuthFilterRef() {
         // TODO Auto-generated method stub
         return this.authFilterRef;
+
+    /** {@inheritDoc} */
+    @Override
+    public String getJwtCookieName() {
+        // TODO Auto-generated method stub
+        return this.jwtCookieName;
     }
 
 }
